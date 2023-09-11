@@ -2,7 +2,8 @@
 # ------------------------------------------------------#
 import sys
 
-sys.path.append("./pages")
+sys.path.append("./views")
+sys.path.append("./controller")
 
 import sqlite3
 from PyQt5 import *
@@ -20,15 +21,15 @@ from PyQt5.QtWebEngineWidgets import *
 # ----------------------------------------------------------------#
 
 mainApp = QApplication(sys.argv)
-penMainWindow = QMainWindow()
+MainWindow = QMainWindow()
 ui = Ui_MainWindow()
-ui.setupUi(penMainWindow)
+ui.setupUi(MainWindow)
 
-penMainWindow.setWindowIcon(QtGui.QIcon("./icon.ico"))
-penMainWindow.setWindowTitle("Stock Management")
+MainWindow.setWindowIcon(QtGui.QIcon("./icon.ico"))
+MainWindow.setWindowTitle("Stock Management")
 
 
-penMainWindow.show()
+MainWindow.show()
 
 # ---------------------Main oluştur----------------------#
 
