@@ -5,12 +5,12 @@ import sys
 sys.path.append("./views")
 sys.path.append("./controller")
 
-import sqlite3
 from PyQt5 import *
 from PyQt5.QtWidgets import *
 from main_page import *
 from PyQt5.QtCore import *
 from PyQt5.QtWebEngineWidgets import *
+from controllers import user_controller
 
 
 # ---------------------Kütühaphane----------------------#
