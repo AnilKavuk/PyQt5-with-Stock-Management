@@ -36,42 +36,53 @@ connection.commit()
 MainWindow.show()
 
 # ---------------------Main Create----------------------------------#
+ui.ProductTable.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
 
 
 def addProduct():
+    question = QMessageBox.question(
+        MainWindow,
+        "Update Record",
+        "Are you sure you want to add the product?",
+        QMessageBox.Yes | QMessageBox.No,
+    )
     try:
-        productName = ui.ProductName
-        productType = ui.ProductType
-        quantity = ui.ProductQuantity
-        quantityPrice = ui.ProductQuantityPrice
-        mountingType = ui.ProductMountingType
-        description = ui.ProductDescription
+        if question == QMessageBox.Yes:
+            productName = ui.ProductName
+            productType = ui.ProductType
+            quantity = ui.ProductQuantity
+            quantityPrice = ui.ProductQuantityPrice
+            mountingType = ui.ProductMountingType
+            description = ui.ProductDescription
 
-        if (
-            len(productName.text()) > 0
-            and len(productType.text()) > 0
-            and len(quantity.text()) > 0
-        ):
-            cursor.execute(
-                """INSERT INTO \
-                stock(productName,productType,quantity,quantityPrice,mountingType,description)\
-                VALUES (?,?,?,?,?,?)""",
-                (
-                    productName.text(),
-                    productType.text(),
-                    quantity.text(),
-                    quantityPrice.text(),
-                    mountingType.currentText(),
-                    description.toPlainText(),
-                ),
-            )
-            connection.commit()
-            ui.statusbar.showMessage("Saved successfully", 3000)
-            productListing()
+            if (
+                len(productName.text()) > 0
+                and len(productType.text()) > 0
+                and len(quantity.text()) > 0
+            ):
+                cursor.execute(
+                    """INSERT INTO \
+                    stock(productName,productType,quantity,
+                    quantityPrice,mountingType,description)\
+                    VALUES (?,?,?,?,?,?)""",
+                    (
+                        productName.text(),
+                        productType.text(),
+                        quantity.text(),
+                        quantityPrice.text(),
+                        mountingType.currentText(),
+                        description.toPlainText(),
+                    ),
+                )
+                connection.commit()
+                ui.statusbar.showMessage("Saved successfully", 3000)
+                productListing()
+            else:
+                ui.statusbar.showMessage(
+                    "Product name, Product Type or Quantity cannot be left blank", 3000
+                )
         else:
-            ui.statusbar.showMessage(
-                "Product name, Product Type or Quantity cannot be left blank", 3000
-            )
+            ui.statusbar.showMessage("Product addition canceled", 3000)
     except Exception as error:
         ui.statusbar.showMessage("This error was encountered: " + str(error), 3000)
 
@@ -128,7 +139,6 @@ productListing()
 def bringRecords():
     try:
         selectedProduct = ui.ProductTable.selectedItems()
-        print(selectedProduct[1].text())
 
         ui.ProductName.setText(selectedProduct[1].text())
         ui.ProductType.setText(selectedProduct[2].text())
@@ -141,10 +151,53 @@ def bringRecords():
         ui.statusbar.showMessage("This error was encountered: " + str(error), 3000)
 
 
+def productUpdate():
+    question = QMessageBox.question(
+        MainWindow,
+        "Update Record",
+        "Are you sure you want to update the record?",
+        QMessageBox.Yes | QMessageBox.No,
+    )
+    if question == QMessageBox.Yes:
+        try:
+            selectedProduct = ui.ProductTable.selectedItems()
+            id = int(selectedProduct[0].text())
+            print(id)
+
+            cursor.execute(
+                """UPDATE stock SET\
+                productName=?,productType=?,quantity=?,
+                quantityPrice=?,mountingType=?,description=? WHERE id=?""",
+                (
+                    ui.ProductName.text(),
+                    ui.ProductType.text(),
+                    ui.ProductQuantity.text(),
+                    ui.ProductQuantityPrice.text(),
+                    ui.ProductMountingType.currentText(),
+                    ui.ProductDescription.toPlainText(),
+                    id,
+                ),
+            )
+
+            connection.commit()
+            productListing()
+            ui.statusbar.showMessage(
+                "Registration update process was completed successfully...", 3000
+            )
+
+        except Exception as error:
+            ui.statusbar.showMessage("This error was encountered: " + str(error), 3000)
+
+    else:
+        ui.statusbar.showMessage("Registration Update process canceled...", 3000)
+
+
 # ---------------------signal slot----------------------------------#
 ui.ProductAdd.clicked.connect(addProduct)
 
 ui.ProductTable.itemSelectionChanged.connect(bringRecords)
+
+ui.ProductUpdate.clicked.connect(productUpdate)
 # ---------------------signal slot----------------------------------#
 
 
