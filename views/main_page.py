@@ -7,6 +7,10 @@ class Ui_MainWindow(object):
         MainWindow.resize(1269, 797)
         MainWindow.setMinimumSize(QtCore.QSize(1269, 797))
         MainWindow.setMaximumSize(QtCore.QSize(1269, 797))
+        icon = QtGui.QIcon()
+        icon.addPixmap(
+            QtGui.QPixmap(":/icon/icon.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off
+        )
         MainWindow.setStyleSheet(
             "QToolTip\n"
             "{\n"
@@ -551,9 +555,16 @@ class Ui_MainWindow(object):
         self.ProductSearch.setObjectName("ProductSearch")
         self.verticalLayout_13.addWidget(self.ProductSearch)
         spacerItem3 = QtWidgets.QSpacerItem(
-            20, 230, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
         )
         self.verticalLayout_13.addItem(spacerItem3)
+        self.ProductList = QtWidgets.QPushButton(self.verticalLayoutWidget_5)
+        self.ProductList.setObjectName("ProductList")
+        self.verticalLayout_13.addWidget(self.ProductList)
+        spacerItem4 = QtWidgets.QSpacerItem(
+            20, 230, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
+        self.verticalLayout_13.addItem(spacerItem4)
         self.horizontalLayoutWidget_5 = QtWidgets.QWidget(self.centralwidget)
         self.horizontalLayoutWidget_5.setGeometry(QtCore.QRect(30, 150, 271, 80))
         self.horizontalLayoutWidget_5.setObjectName("horizontalLayoutWidget_5")
@@ -570,6 +581,7 @@ class Ui_MainWindow(object):
         self.label_39.setObjectName("label_39")
         self.horizontalLayout_39.addWidget(self.label_39)
         self.ProductMountingType = QtWidgets.QComboBox(self.horizontalLayoutWidget_5)
+        self.ProductMountingType.setCurrentText("")
         self.ProductMountingType.setObjectName("ProductMountingType")
         self.ProductMountingType.addItem("")
         self.ProductMountingType.addItem("")
@@ -589,8 +601,9 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.ProductTable.sizePolicy().hasHeightForWidth())
         self.ProductTable.setSizePolicy(sizePolicy)
-        self.ProductTable.setObjectName("ProductTable")
+        self.ProductTable.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.ProductTable.setColumnCount(7)
+        self.ProductTable.setObjectName("ProductTable")
         self.ProductTable.setRowCount(0)
         item = QtWidgets.QTableWidgetItem()
         self.ProductTable.setHorizontalHeaderItem(0, item)
@@ -607,6 +620,7 @@ class Ui_MainWindow(object):
         self.ProductTable.horizontalHeader().setCascadingSectionResizes(False)
         self.ProductTable.horizontalHeader().setStretchLastSection(True)
         self.ProductTable.verticalHeader().setCascadingSectionResizes(False)
+        self.ProductTable.verticalHeader().setSortIndicatorShown(False)
         self.ProductTable.verticalHeader().setStretchLastSection(False)
         self.verticalLayout_14.addWidget(self.ProductTable)
         self.horizontalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
@@ -688,6 +702,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
+        self.ProductMountingType.setCurrentIndex(-1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -700,9 +715,11 @@ class Ui_MainWindow(object):
         self.ProductUpdate.setText(_translate("MainWindow", "Product Update"))
         self.ProductDelete.setText(_translate("MainWindow", "Product Delete"))
         self.ProductSearch.setText(_translate("MainWindow", "Product Search"))
+        self.ProductList.setText(_translate("MainWindow", "Product Listing"))
         self.label_39.setText(_translate("MainWindow", "Mounting Type:"))
-        self.ProductMountingType.setItemText(0, _translate("MainWindow", "Dip"))
+        self.ProductMountingType.setItemText(0, _translate("MainWindow", "DIP"))
         self.ProductMountingType.setItemText(1, _translate("MainWindow", "SMD"))
+        self.ProductTable.setSortingEnabled(False)
         item = self.ProductTable.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Product Name"))
         item = self.ProductTable.horizontalHeaderItem(1)

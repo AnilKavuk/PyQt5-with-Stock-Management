@@ -2,6 +2,7 @@
 # ------------------------------------------------------------------#
 import sys
 import sqlite3
+import os
 
 sys.path.append("./views")
 
@@ -9,7 +10,6 @@ from PyQt5 import *
 from PyQt5.QtWidgets import *
 from main_page import *
 from PyQt5.QtCore import *
-from PyQt5.QtWebEngineWidgets import *
 
 # ---------------------Library--------------------------------------#
 # ------------------------------------------------------------------#
@@ -17,7 +17,8 @@ from PyQt5.QtWebEngineWidgets import *
 
 # ---------------------Main Create----------------------------------#
 # ------------------------------------------------------------------#
-
+if os.listdir()[0] != "data":
+    os.mkdir("data")
 mainApp = QApplication(sys.argv)
 MainWindow = QMainWindow()
 ui = Ui_MainWindow()
@@ -26,19 +27,17 @@ ui.setupUi(MainWindow)
 MainWindow.setWindowIcon(QtGui.QIcon("./icon.ico"))
 MainWindow.setWindowTitle("Stock Management")
 
-connection = sqlite3.connect("./database/products.db")
+connection = sqlite3.connect("data/products.db")
 cursor = connection.cursor()
 cursor.execute(
-    "CREATE TABLE IF NOT EXISTS stock ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,productName TEXT NOT NULL, productType TEXT NOT NULL, quantity INTEGER NOT NULL,quantityPrice INTEGER,mountingType TEXT, description TEXT)"
+    """CREATE TABLE IF NOT EXISTS stock (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,productName TEXT NOT NULL, productType TEXT NOT NULL, quantity INTEGER NOT NULL,quantityPrice INTEGER,mountingType TEXT, description TEXT)"""
 )
 connection.commit()
 
 MainWindow.show()
 
+
 # ---------------------Main Create----------------------------------#
-ui.ProductTable.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
-
-
 def addProduct():
     question = QMessageBox.question(
         MainWindow,
@@ -126,7 +125,7 @@ def productListing():
         productType.clear(),
         quantity.clear(),
         quantityPrice.clear(),
-        mountingType.setCurrentIndex(0),
+        mountingType.setCurrentIndex(-1),
         description.clear()
 
     except Exception as error:
@@ -162,7 +161,6 @@ def productUpdate():
         try:
             selectedProduct = ui.ProductTable.selectedItems()
             id = int(selectedProduct[0].text())
-            print(id)
 
             cursor.execute(
                 """UPDATE stock SET\
@@ -192,12 +190,85 @@ def productUpdate():
         ui.statusbar.showMessage("Registration Update process canceled...", 3000)
 
 
+def searhProduct():
+    try:
+        searched = cursor.execute(
+            """SELECT * FROM stock WHERE productName=? OR productType=? OR quantity=?  OR mountingType=?""",
+            (
+                ui.ProductName.text(),
+                ui.ProductType.text(),
+                ui.ProductQuantity.text(),
+                ui.ProductMountingType.currentText(),
+            ),
+        )
+        connection.commit()
+        ui.ProductTable.clear()
+        ui.ProductTable.setHorizontalHeaderLabels(
+            (
+                "No",
+                "Product Name",
+                "Product Type",
+                "Quantity",
+                "Quantity Price",
+                "Mounting Type",
+                "Description",
+            )
+        )
+
+        ui.ProductName.clear(),
+        ui.ProductType.clear(),
+        ui.ProductQuantity.clear(),
+        ui.ProductQuantityPrice.clear(),
+        ui.ProductMountingType.setCurrentIndex(-1),
+        ui.ProductDescription.clear(),
+
+        ui.ProductTable.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+
+        for rowIndexes, rowValue in enumerate(searched):
+            for columnIndexes, columnValue in enumerate(rowValue):
+                ui.ProductTable.setItem(
+                    rowIndexes, columnIndexes, QTableWidgetItem(str(columnValue))
+                )
+
+    except Exception as error:
+        ui.statusbar.showMessage("This error was encountered: " + str(error), 3000)
+
+
+def removeProduct():
+    question = QMessageBox.question(
+        MainWindow,
+        "Delete Record",
+        "Are you sure you want to delete the record?",
+        QMessageBox.Yes | QMessageBox.No,
+    )
+    if question == QMessageBox.Yes:
+        selected = ui.ProductTable.selectedItems()
+        productId = int(selected[0].text())
+        try:
+            cursor.execute("DELETE FROM stock WHERE id='%s'" % (productId))
+            connection.commit()
+            productListing()
+            ui.statusbar.showMessage("Registration deletion was successful...", 10000)
+            pass
+        except Exception as error:
+            ui.statusbar.showMessage("This error was encountered: " + str(error), 3000)
+
+    else:
+        ui.statusbar.showMessage("Registration Delete process canceled...", 3000)
+
+
 # ---------------------signal slot----------------------------------#
 ui.ProductAdd.clicked.connect(addProduct)
 
 ui.ProductTable.itemSelectionChanged.connect(bringRecords)
 
 ui.ProductUpdate.clicked.connect(productUpdate)
+
+ui.ProductSearch.clicked.connect(searhProduct)
+
+ui.ProductList.clicked.connect(productListing)
+
+ui.ProductDelete.clicked.connect(removeProduct)
 # ---------------------signal slot----------------------------------#
 
 
