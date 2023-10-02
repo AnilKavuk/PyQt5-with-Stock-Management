@@ -710,7 +710,6 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "Product Manager"))
         self.label_37.setText(_translate("MainWindow", "Description:"))
         self.label_38.setText(_translate("MainWindow", "Quantity:"))
-        self.ProductQuantity.setInputMask(_translate("MainWindow", "9999999"))
         self.ProductAdd.setText(_translate("MainWindow", "Product Add"))
         self.ProductUpdate.setText(_translate("MainWindow", "Product Update"))
         self.ProductDelete.setText(_translate("MainWindow", "Product Delete"))
@@ -734,5 +733,4 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Description"))
         self.label_40.setText(_translate("MainWindow", "Product Name:"))
         self.label_41.setText(_translate("MainWindow", "Quantity Price:"))
-        self.ProductQuantityPrice.setInputMask(_translate("MainWindow", "9999999"))
         self.label_42.setText(_translate("MainWindow", "Product Type:"))

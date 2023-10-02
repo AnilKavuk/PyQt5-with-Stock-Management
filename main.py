@@ -17,8 +17,6 @@ from PyQt5.QtCore import *
 
 # ---------------------Main Create----------------------------------#
 # ------------------------------------------------------------------#
-if os.listdir()[0] != "data":
-    os.mkdir("data")
 mainApp = QApplication(sys.argv)
 MainWindow = QMainWindow()
 ui = Ui_MainWindow()
@@ -65,10 +63,10 @@ def addProduct():
                     quantityPrice,mountingType,description)\
                     VALUES (?,?,?,?,?,?)""",
                     (
-                        productName.text(),
-                        productType.text(),
-                        quantity.text(),
-                        quantityPrice.text(),
+                        productName.text().capitalize(),
+                        productType.text().capitalize(),
+                        quantity.text().capitalize(),
+                        quantityPrice.text().capitalize(),
                         mountingType.currentText(),
                         description.toPlainText(),
                     ),
@@ -167,10 +165,10 @@ def productUpdate():
                 productName=?,productType=?,quantity=?,
                 quantityPrice=?,mountingType=?,description=? WHERE id=?""",
                 (
-                    ui.ProductName.text(),
-                    ui.ProductType.text(),
-                    ui.ProductQuantity.text(),
-                    ui.ProductQuantityPrice.text(),
+                    ui.ProductName.text().capitalize(),
+                    ui.ProductType.text().capitalize(),
+                    ui.ProductQuantity.text().capitalize(),
+                    ui.ProductQuantityPrice.text().capitalize(),
                     ui.ProductMountingType.currentText(),
                     ui.ProductDescription.toPlainText(),
                     id,
@@ -192,16 +190,36 @@ def productUpdate():
 
 def searhProduct():
     try:
-        searched = cursor.execute(
-            """SELECT * FROM stock WHERE productName=? OR productType=? OR quantity=?  OR mountingType=?""",
-            (
-                ui.ProductName.text(),
-                ui.ProductType.text(),
-                ui.ProductQuantity.text(),
-                ui.ProductMountingType.currentText(),
-            ),
-        )
-        connection.commit()
+        if len(ui.ProductName.text().capitalize()) > 0:
+            searched = cursor.execute(
+                """SELECT * FROM stock WHERE productName LIKE '%{}%'""".format(
+                    ui.ProductName.text().capitalize(),
+                )
+            )
+        elif len(ui.ProductType.text().capitalize()) > 0:
+            searched = cursor.execute(
+                """SELECT * FROM stock WHERE productType LIKE '%{}%'""".format(
+                    ui.ProductType.text().capitalize(),
+                )
+            )
+        elif len(ui.ProductQuantity.text()) > 0:
+            searched = cursor.execute(
+                """SELECT * FROM stock WHERE quantity LIKE '%{}%'""".format(
+                    ui.ProductQuantity.text(),
+                )
+            )
+        elif len(ui.ProductMountingType.currentText()) > 0:
+            searched = cursor.execute(
+                """SELECT * FROM stock WHERE mountingType LIKE '%{}%'""".format(
+                    ui.ProductMountingType.currentText(),
+                )
+            )
+        else:
+            searched = cursor.execute("""SELECT * FROM stock""")
+            ui.statusbar.showMessage(
+                "The product you were looking for was not found...", 3000
+            )
+
         ui.ProductTable.clear()
         ui.ProductTable.setHorizontalHeaderLabels(
             (
@@ -214,7 +232,6 @@ def searhProduct():
                 "Description",
             )
         )
-
         ui.ProductName.clear(),
         ui.ProductType.clear(),
         ui.ProductQuantity.clear(),
@@ -223,11 +240,12 @@ def searhProduct():
         ui.ProductDescription.clear(),
 
         ui.ProductTable.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-
         for rowIndexes, rowValue in enumerate(searched):
             for columnIndexes, columnValue in enumerate(rowValue):
                 ui.ProductTable.setItem(
-                    rowIndexes, columnIndexes, QTableWidgetItem(str(columnValue))
+                    rowIndexes,
+                    columnIndexes,
+                    QTableWidgetItem(str(columnValue)),
                 )
 
     except Exception as error:
