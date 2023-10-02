@@ -1,5 +1,3 @@
-# ---------------------Library--------------------------------------#
-# ------------------------------------------------------------------#
 import sys
 import sqlite3
 import os
@@ -11,12 +9,6 @@ from PyQt5.QtWidgets import *
 from main_page import *
 from PyQt5.QtCore import *
 
-# ---------------------Library--------------------------------------#
-# ------------------------------------------------------------------#
-
-
-# ---------------------Main Create----------------------------------#
-# ------------------------------------------------------------------#
 mainApp = QApplication(sys.argv)
 MainWindow = QMainWindow()
 ui = Ui_MainWindow()
@@ -38,7 +30,6 @@ connection.commit()
 MainWindow.show()
 
 
-# ---------------------Main Create----------------------------------#
 def addProduct():
     question = QMessageBox.question(
         MainWindow,
@@ -278,7 +269,6 @@ def removeProduct():
         ui.statusbar.showMessage("Registration Delete process canceled...", 3000)
 
 
-# ---------------------signal slot----------------------------------#
 ui.ProductAdd.clicked.connect(addProduct)
 
 ui.ProductTable.itemSelectionChanged.connect(bringRecords)
@@ -290,7 +280,5 @@ ui.ProductSearch.clicked.connect(searhProduct)
 ui.ProductList.clicked.connect(productListing)
 
 ui.ProductDelete.clicked.connect(removeProduct)
-# ---------------------signal slot----------------------------------#
-
 
 sys.exit(mainApp.exec_())
