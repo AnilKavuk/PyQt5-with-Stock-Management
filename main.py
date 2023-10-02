@@ -22,6 +22,9 @@ MainWindow = QMainWindow()
 ui = Ui_MainWindow()
 ui.setupUi(MainWindow)
 
+if os.listdir()[0] != "data":
+    os.mkdir("data")
+
 MainWindow.setWindowIcon(QtGui.QIcon("./icon.ico"))
 MainWindow.setWindowTitle("Stock Management")
 
