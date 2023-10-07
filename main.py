@@ -1,6 +1,8 @@
 import sys
 import sqlite3
 import os
+from xlsxwriter.workbook import Workbook
+import pandas as pd
 
 sys.path.append("./views")
 
@@ -269,6 +271,57 @@ def removeProduct():
         ui.statusbar.showMessage("Registration Delete process canceled...", 3000)
 
 
+def exportDatabase():
+    fname, _ = QFileDialog.getSaveFileName(
+        None, "Export File", "", "All Files (*);;xlsx Files (*.xlsx)"
+    )
+    if fname:
+        try:
+            headers = [
+                "id",
+                "productName",
+                "productType",
+                "quantity",
+                "quantityPrice",
+                "mountingType",
+                "description",
+            ]
+            workBook = Workbook(fname)
+            worksheet = workBook.add_worksheet()
+
+            for indexes, values in enumerate(headers):
+                worksheet.write(0, indexes, values)
+
+            data = cursor.execute("SELECT * FROM stock")
+            for rowIndexes, rowValues in enumerate(data):
+                for columnIndexes, columnValues in enumerate(rowValues):
+                    worksheet.write(rowIndexes + 1, columnIndexes, columnValues)
+            workBook.close()
+            ui.statusbar.showMessage(
+                "Data from the database was successfully transferred to Excel", 3000
+            )
+        except Exception as error:
+            ui.statusbar.showMessage("This error was encountered: " + str(error), 3000)
+
+
+def importDatabase():
+    fname, _ = QFileDialog.getOpenFileName(
+        None, "Import File", "", "All Files (*);;xlsx Files (*.xlsx)"
+    )
+
+    if fname:
+        try:
+            data = pd.ExcelFile(fname)
+
+            for sheet in data.sheet_names:
+                df = pd.read_excel(fname)
+                df.to_sql("stock", connection, index=False, if_exists="replace")
+            productListing()
+
+        except Exception as error:
+            ui.statusbar.showMessage("This error was encountered: " + str(error), 3000)
+
+
 ui.ProductAdd.clicked.connect(addProduct)
 
 ui.ProductTable.itemSelectionChanged.connect(bringRecords)
@@ -280,5 +333,9 @@ ui.ProductSearch.clicked.connect(searhProduct)
 ui.ProductList.clicked.connect(productListing)
 
 ui.ProductDelete.clicked.connect(removeProduct)
+
+ui.actionExport_CSV.triggered.connect(exportDatabase)
+
+ui.actionImport_csv.triggered.connect(importDatabase)
 
 sys.exit(mainApp.exec_())
